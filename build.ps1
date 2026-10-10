@@ -33,6 +33,7 @@ if ($LASTEXITCODE -ne 0) { throw "Audio and settings checks failed." }
     -p:DebugType=None -p:DebugSymbols=false --output $releaseDirectory
 if ($LASTEXITCODE -ne 0) { throw "Windows executable publish failed." }
 
+Copy-Item -LiteralPath (Join-Path $projectDirectory "LICENSE") -Destination $releaseDirectory
 $noticePath = Join-Path $releaseDirectory "THIRD-PARTY-NOTICES.txt"
 Copy-Item -LiteralPath (Join-Path $projectDirectory "THIRD-PARTY-NOTICES.txt") -Destination $noticePath
 $assets = Get-Content -LiteralPath (Join-Path $projectDirectory "obj\project.assets.json") -Raw | ConvertFrom-Json
@@ -54,7 +55,7 @@ foreach ($runtimePackage in @("microsoft.netcore.app.runtime.win-x64", "microsof
 
 & $InnoCompiler (Join-Path $projectDirectory "installer.iss")
 if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed." }
-$portableFiles = @("ApolloMicBridge.exe", "THIRD-PARTY-NOTICES.txt") |
+$portableFiles = @("ApolloMicBridge.exe", "LICENSE", "THIRD-PARTY-NOTICES.txt") |
     ForEach-Object { Join-Path $releaseDirectory $_ }
 $portableZip = Join-Path $distDirectory "ApolloMicBridge-Portable-win-x64.zip"
 Compress-Archive -LiteralPath $portableFiles -DestinationPath $portableZip -Force

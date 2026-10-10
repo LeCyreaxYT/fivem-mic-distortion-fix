@@ -44,6 +44,7 @@ Name: "desktopicon"; Description: "{cm:DesktopIcon}"; Flags: unchecked
 
 [Files]
 Source: "dist\win-x64\ApolloMicBridge.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\win-x64\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
