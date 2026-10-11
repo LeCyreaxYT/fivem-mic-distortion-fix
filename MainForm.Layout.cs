@@ -19,7 +19,7 @@ internal sealed partial class MainForm
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 116));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 54));
 
         var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2, Margin = Padding.Empty };
@@ -36,7 +36,7 @@ internal sealed partial class MainForm
         root.Controls.Add(header, 0, 0);
 
         var columns = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1,
-            Margin = new Padding(0, 0, 0, 18) };
+            Margin = new Padding(0, 0, 0, 12) };
         columns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 57));
         columns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 43));
         var route = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 0,
@@ -120,7 +120,7 @@ internal sealed partial class MainForm
         feedback.Controls.Add(status, 0, 1);
         root.Controls.Add(feedback, 0, 2);
 
-        var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false,
+        var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, WrapContents = false,
             Padding = new Padding(0, 12, 0, 0), Margin = Padding.Empty };
         start.Width = 210;
         actions.Controls.Add(start);

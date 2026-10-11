@@ -488,6 +488,9 @@ internal sealed partial class MainForm : SkyWindow
     internal void VerifyShell()
     {
         var previousSize = Size;
+        var previousMinimumSize = MinimumSize;
+        // Exercise the runner's compact 720p work area on larger developer displays too.
+        MinimumSize = new Size(MinimumSize.Width, Math.Min(MinimumSize.Height, 720 * DeviceDpi / 96));
         Size = MinimumSize;
         PerformLayout();
         if (status.Height < status.Font.Height * 3 || !ClientRectangle.Contains(RectangleToClient(status.RectangleToScreen(status.ClientRectangle))))
@@ -499,6 +502,7 @@ internal sealed partial class MainForm : SkyWindow
                 if (!parent.RectangleToScreen(parent.ClientRectangle).Contains(bounds))
                     throw new InvalidOperationException($"Control {control.AccessibleName ?? control.Text} is clipped at the minimum window size: {bounds}, preferred={control.PreferredSize}, autoSize={control.AutoSize}, parent {parent.GetType().Name} {parent.RectangleToScreen(parent.ClientRectangle)}, preferred={parent.PreferredSize}.");
         }
+        MinimumSize = previousMinimumSize;
         Size = previousSize;
         if (exclusiveOutput.Checked != settings.ExclusiveOutput || !exclusiveOutput.Enabled)
             throw new InvalidOperationException("Saved cable output mode is not available in the native control.");
