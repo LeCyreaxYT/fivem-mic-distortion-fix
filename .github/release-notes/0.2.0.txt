@@ -1,0 +1,18 @@
+## Changes
+
+- New Sky interface with PMA Mic Bridge branding, clearer audio controls and German/English guidance.
+- Automatic update checks at startup and an in-app update action for setup and portable installations, including published previews.
+- Update downloads verify the GitHub SHA-256 digest before installation. Settings and Windows startup registration are preserved; a running microphone route resumes after the app restarts.
+- Improved background startup and window restoration, with native controls sized correctly on compact 720p work areas.
+
+## Updating from 0.1.2
+
+Version 0.1.2 has no built-in updater. Download and run the setup below once, or replace the three files in your portable folder with the new ZIP contents. Stop the existing app first. Keep your existing settings; the application ID, executable name and settings paths remain unchanged.
+
+From 0.2.0 onward, future releases can be installed through the app. VB-CABLE and your audio interface driver are still required; this download does not install them.
+
+## Downloads and checks
+
+Choose ApolloMicBridge-Setup-0.2.0.exe for installation, or ApolloMicBridge-Portable-win-x64.zip for a portable copy. Both include the Windows x64 runtime and license notices. SHA-256 files are included for manual verification.
+
+Audio/settings/updater tests and installed/portable package checks run before publication. Live FiveM audio on Apollo hardware has not been verified.

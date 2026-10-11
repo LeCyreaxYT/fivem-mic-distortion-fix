@@ -3,18 +3,34 @@ Windows release contract
 The visible application name is PMA Mic Bridge. Package filenames, executable
 name, installation ID and settings paths stay stable for existing installations.
 
-1. Change Version in ApolloMicBridge.csproj, then run build.ps1. The script
-   runs audio/settings/updater checks and builds the setup and portable ZIP.
-   Its AppVersion argument keeps the setup version aligned with the application.
-2. Create a GitHub Release in LeCyreaxYT/fivem-mic-distortion-fix with a matching
-   tag, for example 0.2.0 or v0.2.0. Both stable releases and published
-   prereleases are eligible. Drafts are ignored. Use increasing numeric versions;
-   semver preview tags such as v0.3.0-beta.1 are supported.
-3. Attach both complete packages before publishing:
+1. Set Version in ApolloMicBridge.csproj manually to the next numeric version.
+   Commit and push the change to main. Ordinary main pushes and pull requests
+   build and test packages; they do not change versions or publish releases.
+   Optionally add customer notes in .github/release-notes/<version>.txt. GitHub
+   generates commit/PR notes automatically and prepends this file when present.
+2. After the main build passes, create and push a matching numeric tag without v:
+   git tag 0.2.0
+   git push origin 0.2.0
+   Use increasing versions and tag the intended main commit. Existing tags must
+   never be moved or deleted. The tag must exactly match the project Version.
+3. The tag pipeline runs the audio/settings/updater checks, builds packages,
+   and verifies installer, uninstaller and portable update behavior. Only after
+   all checks pass does a separate job create a draft and attach these assets:
    ApolloMicBridge-Setup-<version>.exe
    ApolloMicBridge-Portable-win-x64.zip
-   Keep the portable ZIP's three root files unchanged: ApolloMicBridge.exe,
-   LICENSE and THIRD-PARTY-NOTICES.txt. GitHub provides the SHA-256 asset digest.
+   Each package also has a matching .sha256 file. The pipeline compares GitHub's
+   asset sizes and SHA-256 digests to the tested local files before publishing
+   a stable release. A failed upload leaves a draft; retrying completes it.
+   A retry of an already published release preserves its assets and notes.
+   Tag runs are not cancelled by a newer push. Pull requests have read access;
+   only the release job has write access through the built-in GitHub token.
+
+Keep the portable ZIP's three root files unchanged: ApolloMicBridge.exe,
+LICENSE and THIRD-PARTY-NOTICES.txt. Package names must remain compatible with
+the updater. Local build.ps1 uses the same project version for the app and setup.
+
+The updater also accepts manually published prereleases, including tags such
+as v0.3.0-beta.1. The automated pipeline uses numeric stable tags only.
 
 The app checks the 100 most recent published releases once per launch and on
 request. It chooses the highest version above its assembly version. Missing

@@ -3,6 +3,7 @@ name: Windows build
 on:
   push:
     branches: [main]
+    tags: ['*.*.*']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -12,7 +13,7 @@ permissions:
 
 concurrency:
   group: windows-build-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 jobs:
   build:
@@ -23,6 +24,13 @@ jobs:
         shell: pwsh
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Test release publishing rules
+        run: .\tests\verify-release.ps1
+
+      - name: Validate release tag and project version
+        if: github.ref_type == 'tag'
+        run: .\.github\scripts\publish-release.ps1 -Tag $env:GITHUB_REF_NAME -ValidateOnly
 
       - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
         with:
@@ -57,3 +65,27 @@ jobs:
             dist/ApolloMicBridge-Portable-win-x64.zip
           if-no-files-found: error
           compression-level: 0
+
+  release:
+    name: Publish GitHub release
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: build
+    runs-on: windows-2025
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: ApolloMicBridge-win-x64
+          path: dist
+
+      - name: Publish verified setup and portable packages
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .\.github\scripts\publish-release.ps1 -Tag $env:GITHUB_REF_NAME
