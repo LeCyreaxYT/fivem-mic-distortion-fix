@@ -4,6 +4,7 @@ param([string]$InnoCompiler)
 $ErrorActionPreference = "Stop"
 $projectDirectory = [IO.Path]::GetFullPath($PSScriptRoot)
 $appProject = Join-Path $projectDirectory "ApolloMicBridge.csproj"
+$appVersion = ([xml](Get-Content -LiteralPath $appProject -Raw)).Project.PropertyGroup.Version
 $testProject = Join-Path $projectDirectory "tests\ApolloMicBridge.Tests.csproj"
 $releaseDirectory = Join-Path $projectDirectory "dist\win-x64"
 $distDirectory = Join-Path $projectDirectory "dist"
@@ -53,11 +54,11 @@ foreach ($runtimePackage in @("microsoft.netcore.app.runtime.win-x64", "microsof
     }
 }
 
-& $InnoCompiler (Join-Path $projectDirectory "installer.iss")
+& $InnoCompiler "/DAppVersion=$appVersion" (Join-Path $projectDirectory "installer.iss")
 if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed." }
 $portableFiles = @("ApolloMicBridge.exe", "LICENSE", "THIRD-PARTY-NOTICES.txt") |
     ForEach-Object { Join-Path $releaseDirectory $_ }
 $portableZip = Join-Path $distDirectory "ApolloMicBridge-Portable-win-x64.zip"
 Compress-Archive -LiteralPath $portableFiles -DestinationPath $portableZip -Force
-Get-FileHash -LiteralPath (Join-Path $distDirectory "ApolloMicBridge-Setup-0.1.2.exe"), $portableZip -Algorithm SHA256 |
+Get-FileHash -LiteralPath (Join-Path $distDirectory "ApolloMicBridge-Setup-$appVersion.exe"), $portableZip -Algorithm SHA256 |
     Format-List Path, Hash

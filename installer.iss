@@ -1,13 +1,17 @@
-#define AppName "Apollo Mic Bridge"
-#define AppVersion "0.1.2"
+#define AppName "PMA Mic Bridge"
+#ifndef AppVersion
+  #define AppVersion "0.2.0"
+#endif
 
 [Setup]
 AppId={{77DCFA70-A21A-43F9-AB44-C6A8D3481997}
 AppName={#AppName}
 AppVersion={#AppVersion}
+VersionInfoVersion={#GetVersionNumbersString("dist\win-x64\ApolloMicBridge.exe")}
 AppPublisher=Sky-Systems
 DefaultDirName={localappdata}\Programs\SkySystems\ApolloMicBridge
-DefaultGroupName=SkySystems\Apollo Mic Bridge
+DefaultGroupName=SkySystems\PMA Mic Bridge
+UsePreviousGroup=no
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64os
 ArchitecturesInstallIn64BitMode=x64os
@@ -31,12 +35,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [CustomMessages]
 german.Autostart=Bei der Windows-Anmeldung im Hintergrund starten
 german.DesktopIcon=Desktop-Verknüpfung erstellen
-german.OpenApp=Apollo Mic Bridge zur Einrichtung öffnen
-german.CloseError=Apollo Mic Bridge konnte nicht beendet werden. Bitte über das Tray-Menü beenden und erneut versuchen.
+german.OpenApp=PMA Mic Bridge zur Einrichtung öffnen
+german.CloseError=PMA Mic Bridge konnte nicht beendet werden. Bitte über das Tray-Menü beenden und erneut versuchen.
 english.Autostart=Start in the background when signing in to Windows
 english.DesktopIcon=Create a desktop shortcut
-english.OpenApp=Open Apollo Mic Bridge to configure the microphone
-english.CloseError=Apollo Mic Bridge could not be closed. Quit it from the tray menu and try again.
+english.OpenApp=Open PMA Mic Bridge to configure the microphone
+english.CloseError=PMA Mic Bridge could not be closed. Quit it from the tray menu and try again.
 
 [Tasks]
 Name: "autostart"; Description: "{cm:Autostart}"
@@ -48,9 +52,15 @@ Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\win-x64\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\Apollo Mic Bridge"; Filename: "{app}\ApolloMicBridge.exe"; WorkingDir: "{app}"
+Name: "{group}\PMA Mic Bridge"; Filename: "{app}\ApolloMicBridge.exe"; WorkingDir: "{app}"
 Name: "{group}\Deinstallieren - Uninstall"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Apollo Mic Bridge"; Filename: "{app}\ApolloMicBridge.exe"; Tasks: desktopicon
+Name: "{autodesktop}\PMA Mic Bridge"; Filename: "{app}\ApolloMicBridge.exe"; Tasks: desktopicon
+
+[InstallDelete]
+Type: files; Name: "{userprograms}\SkySystems\Apollo Mic Bridge\Apollo Mic Bridge.lnk"
+Type: files; Name: "{userprograms}\SkySystems\Apollo Mic Bridge\Deinstallieren - Uninstall.lnk"
+Type: dirifempty; Name: "{userprograms}\SkySystems\Apollo Mic Bridge"
+Type: files; Name: "{userdesktop}\Apollo Mic Bridge.lnk"
 
 [Registry]
 Root: HKCU; Subkey: "Software\SkySystems\ApolloMicBridge"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"; Flags: uninsdeletekey
@@ -66,6 +76,13 @@ Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\settings.json"
 Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\settings.json.tmp"
 Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\app.log"
 Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\app.log.previous"
+Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update\ApolloMicBridge.Update.exe"
+Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update\package.exe"
+Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update\package.zip"
+Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update\package.exe.download"
+Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update\package.zip.download"
+Type: files; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update\install.log"
+Type: dirifempty; Name: "{localappdata}\SkySystems\ApolloMicBridge\Update"
 Type: dirifempty; Name: "{localappdata}\SkySystems\ApolloMicBridge"
 
 [Code]

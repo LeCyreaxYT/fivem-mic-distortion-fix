@@ -1,0 +1,36 @@
+Windows release contract
+
+The visible application name is PMA Mic Bridge. Package filenames, executable
+name, installation ID and settings paths stay stable for existing installations.
+
+1. Change Version in ApolloMicBridge.csproj, then run build.ps1. The script
+   runs audio/settings/updater checks and builds the setup and portable ZIP.
+   Its AppVersion argument keeps the setup version aligned with the application.
+2. Create a GitHub Release in LeCyreaxYT/fivem-mic-distortion-fix with a matching
+   tag, for example 0.2.0 or v0.2.0. Both stable releases and published
+   prereleases are eligible. Drafts are ignored. Use increasing numeric versions;
+   semver preview tags such as v0.3.0-beta.1 are supported.
+3. Attach both complete packages before publishing:
+   ApolloMicBridge-Setup-<version>.exe
+   ApolloMicBridge-Portable-win-x64.zip
+   Keep the portable ZIP's three root files unchanged: ApolloMicBridge.exe,
+   LICENSE and THIRD-PARTY-NOTICES.txt. GitHub provides the SHA-256 asset digest.
+
+The app checks the 100 most recent published releases once per launch and on
+request. It chooses the highest version above its assembly version. Missing
+assets, missing checksums and network/rate-limit failures are shown separately
+from the audio status. There is no GitHub token in the application.
+
+Installing an offered update downloads and verifies the package first, then
+stops audio, saves its settings and starts a separate copy of the application
+to perform the update. Setup installations use their existing per-user path;
+portable installations replace only their three package files and roll back on
+replacement failure. The updater restarts the app and resumes a previously
+running microphone route. Autostart registration and settings are preserved.
+
+The helper and installer log are retained in the application's local Update
+directory and reused on the next update. Downloads and portable backups are
+removed after success. A failed portable rollback retains its backup for recovery.
+
+Versions before 0.2.0 do not have an updater. Install 0.2.0 once manually to
+receive subsequent releases through the app.

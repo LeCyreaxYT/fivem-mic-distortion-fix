@@ -12,10 +12,20 @@ internal static class Program
 {
     private static int passed;
 
+    [STAThread]
     private static int Main(string[] args)
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--apply-update")
+                return UpdateInstaller.Run(args);
+            if (args.SequenceEqual(new[] { "--quit" }))
+                return SingleInstance.RequestShutdown() ? 0 : 2;
+            if (args.Length == 3 && args[0] == "--update-parent")
+            {
+                UpdaterProcessProbe.Run(args[1], args[2]);
+                return 0;
+            }
             Test("one, two, four, ten and 32 channel float capture", ChannelSelection);
             Test("PCM 8, 16, 24 and 32 bit normalization", PcmFormats);
             Test("float64 normalization", Float64Format);
@@ -34,9 +44,10 @@ internal static class Program
             Test("start failure cleanup and repeatable disposal", FailedStartCleanup);
             Test("settings persistence and invalid values", SettingsPersistence);
             Test("quoted Windows startup command", StartupCommand);
+            UpdateTests.Run(Test);
             if (args.Length == 2 && args[0] is "--benchmark" or "--benchmark-exclusive" or "--benchmark-exclusive24")
                 Benchmark(args[1], args[0] switch { "--benchmark-exclusive" => 16, "--benchmark-exclusive24" => 24, _ => 0 });
-            Console.WriteLine($"PASS: {passed} meaningful audio checks.");
+            Console.WriteLine($"PASS: {passed} audio, settings and update checks.");
             return 0;
         }
         catch (Exception error)

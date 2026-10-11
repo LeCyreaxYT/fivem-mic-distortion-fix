@@ -7,7 +7,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>ApolloMicBridge</AssemblyName>
     <RootNamespace>ApolloMicBridge</RootNamespace>
-    <Version>0.1.2</Version>
+    <Product>PMA Mic Bridge</Product>
+    <Title>PMA Mic Bridge</Title>
+    <Version>0.2.0</Version>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <RuntimeFrameworkVersion>10.0.9</RuntimeFrameworkVersion>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>

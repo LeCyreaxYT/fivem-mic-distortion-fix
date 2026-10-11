@@ -1,28 +1,30 @@
 using System.Diagnostics;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
+using static ApolloMicBridge.SkyTheme;
 
 namespace ApolloMicBridge;
 
-internal sealed class MainForm : Form
+internal sealed partial class MainForm : SkyWindow
 {
-    private readonly ComboBox input = new() { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-    private readonly ComboBox channel = new() { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-    private readonly ComboBox cable = new() { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-    private readonly ComboBox asioRate = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
-    private readonly ComboBox reserve = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 80 };
-    private readonly ComboBox outputBits = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110, Enabled = false };
-    private readonly TrackBar gain = new() { Minimum = -24, Maximum = 12, Value = 0, TickFrequency = 6, Dock = DockStyle.Fill };
-    private readonly ProgressBar meter = new() { Minimum = 0, Maximum = 1000, Dock = DockStyle.Fill, Height = 22 };
+    private static readonly Size DefaultClientSize = new(1040, 800);
+    private readonly SkySelect input = new() { Dock = DockStyle.Fill };
+    private readonly SkySelect channel = new() { Dock = DockStyle.Fill };
+    private readonly SkySelect cable = new() { Dock = DockStyle.Fill };
+    private readonly SkySelect asioRate = new() { Width = 105 };
+    private readonly SkySelect reserve = new() { Dock = DockStyle.Fill };
+    private readonly SkySelect outputBits = new() { Dock = DockStyle.Fill, Enabled = false };
+    private readonly SkySlider gain = new() { Minimum = -24, Maximum = 12, Value = 0, Dock = DockStyle.Fill };
+    private readonly AudioLevelMeter meter = new() { Dock = DockStyle.Fill, Height = 12 };
     private readonly Label inputFormat = new() { AutoSize = true, Dock = DockStyle.Fill };
     private readonly Label outputFormat = new() { AutoSize = true, Dock = DockStyle.Fill };
     private readonly Label gainLabel = new() { AutoSize = true, Dock = DockStyle.Fill };
     private readonly Label meterLabel = new() { AutoSize = true, Dock = DockStyle.Fill };
     private readonly TextBox status = new() { Multiline = true, ReadOnly = true, Dock = DockStyle.Fill,
-        ScrollBars = ScrollBars.Vertical, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
-    private readonly Button start = new() { AutoSize = true, Padding = new Padding(14, 5, 14, 5) };
-    private readonly CheckBox windowsStartup = new() { AutoSize = true, Dock = DockStyle.Fill };
-    private readonly CheckBox exclusiveOutput = new() { AutoSize = true, Dock = DockStyle.Fill };
+        ScrollBars = ScrollBars.None, BackColor = Surface, BorderStyle = BorderStyle.None, TabStop = true };
+    private readonly SkyButton start = new() { Primary = true };
+    private readonly SkyToggle windowsStartup = new() { AutoSize = true, Dock = DockStyle.Fill };
+    private readonly SkyToggle exclusiveOutput = new() { AutoSize = true, Dock = DockStyle.Fill };
     private readonly NotifyIcon tray = new() { Icon = SystemIcons.Application };
     private readonly ContextMenuStrip trayMenu = new();
     private readonly ToolStripMenuItem trayStart = new();
@@ -41,6 +43,7 @@ internal sealed class MainForm : Form
     private volatile bool closing;
     private bool inputReady;
     private bool initialized;
+    private bool firstBackgroundOpen;
     private bool pendingAutoStart;
     private bool exitRequested;
     private bool cleanupFailed;
@@ -50,19 +53,22 @@ internal sealed class MainForm : Form
     private int deviceUpdateRequests;
     internal int DeviceUpdateRequests => Volatile.Read(ref deviceUpdateRequests);
 
-    public MainForm(bool autoStart = false, bool background = false)
+    public MainForm(bool autoStart = false, bool background = false, bool checkUpdates = true)
     {
+        SuspendLayout();
         Text = Texts.Get("Title");
         Font = new Font("Segoe UI", 10);
-        BackColor = Color.FromArgb(244, 246, 249);
-        ForeColor = Color.FromArgb(35, 43, 56);
+        BackColor = Background;
+        ForeColor = Ink;
+        DoubleBuffered = true;
+        AutoScaleDimensions = new SizeF(96, 96);
         AutoScaleMode = AutoScaleMode.Dpi;
-        ClientSize = new Size(850, 810);
-        MinimumSize = new Size(760, 680);
+        ClientSize = DefaultClientSize;
+        MinimumSize = new Size(940, 760);
         var workingArea = Screen.FromPoint(Cursor.Position).WorkingArea;
         Size = new Size(Math.Min(Width, workingArea.Width), Math.Min(Height, workingArea.Height));
         StartPosition = FormStartPosition.CenterScreen;
-        Controls.Add(BuildLayout());
+        Content.Controls.Add(BuildLayout());
         windowsStartup.Text = Texts.Get("WindowsStartup");
         windowsStartup.CheckedChanged += (_, _) =>
         {
@@ -84,14 +90,11 @@ internal sealed class MainForm : Form
         trayMenu.Items.Add(new ToolStripSeparator());
         trayMenu.Items.Add(Texts.Get("Quit"), null, (_, _) => RequestExit());
         tray.ContextMenuStrip = trayMenu;
+        trayMenu.Renderer = new ToolStripProfessionalRenderer(new SkyMenuColors());
+        trayMenu.ForeColor = Ink;
         tray.DoubleClick += (_, _) => OpenWindow();
         tray.Text = Texts.Get("TrayStopped");
         tray.Visible = true;
-        if (background)
-        {
-            WindowState = FormWindowState.Minimized;
-            ShowInTaskbar = false;
-        }
         asioRate.Items.AddRange([44100, 48000, 96000]);
         asioRate.SelectedItem = 48000;
         reserve.Items.AddRange([5, 10, 20]);
@@ -127,11 +130,17 @@ internal sealed class MainForm : Form
         start.Click += (_, _) => ToggleBridge();
         meterTimer.Tick += (_, _) => UpdateMeter();
         deviceTimer.Tick += (_, _) => { deviceTimer.Stop(); RefreshDevices(); };
-        Shown += (_, _) =>
+        Shown += async (_, _) =>
         {
             if (initialized)
                 return;
             initialized = true;
+            if (WindowState == FormWindowState.Normal)
+            {
+                var screen = Screen.FromControl(this).WorkingArea;
+                MinimumSize = new Size(Math.Min(MinimumSize.Width, screen.Width), Math.Min(MinimumSize.Height, screen.Height));
+                Size = new Size(Math.Min(Width, screen.Width), Math.Min(Height, screen.Height));
+            }
             var loaded = LoadSettings();
             pendingAutoStart = autoStart && loaded && settings.InputId is not null && settings.CableId is not null;
             RefreshDevices();
@@ -148,6 +157,8 @@ internal sealed class MainForm : Form
                 PostToUi(Hide);
             else if (background)
                 PostToUi(OpenWindow);
+            if (checkUpdates)
+                await CheckForUpdatesAsync();
         };
         VisibleChanged += (_, _) => meterTimer.Interval = Visible ? 200 : 1000;
         Resize += (_, _) =>
@@ -166,6 +177,7 @@ internal sealed class MainForm : Form
                 return;
             }
             closing = true;
+            updateCancellation.Cancel();
             StopBridge();
         };
         FormClosed += (_, _) =>
@@ -176,70 +188,17 @@ internal sealed class MainForm : Form
             trayMenu.Dispose();
             deviceEnumerator.UnregisterEndpointNotificationCallback(notifications);
             deviceEnumerator.Dispose();
+            updateClient.Dispose();
+            updateCancellation.Dispose();
         };
-    }
-
-    private Control BuildLayout()
-    {
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(22), ColumnCount = 1, RowCount = 4 };
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 85));
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 110));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
-        var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
-        header.Controls.Add(new Label { Text = Texts.Get("Title"), AutoSize = true, Font = new Font(Font.FontFamily, 20, FontStyle.Bold) });
-        header.Controls.Add(new Label { Text = Texts.Get("Subtitle"), AutoSize = true, MaximumSize = new Size(780, 0) });
-        root.Controls.Add(header, 0, 0);
-        var fields = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Padding = new Padding(0, 0, 0, 14) };
-        fields.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 165));
-        fields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        AddField(fields, Texts.Get("Input"), input);
-        AddField(fields, "", inputFormat);
-        var channelRow = new TableLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, ColumnCount = 2 };
-        channelRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        channelRow.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        channelRow.Controls.Add(channel, 0, 0);
-        channelRow.Controls.Add(asioRate, 1, 0);
-        asioRate.AccessibleName = Texts.Get("AsioRate");
-        AddField(fields, Texts.Get("Channel"), channelRow);
-        AddField(fields, Texts.Get("Output"), cable);
-        AddField(fields, Texts.Get("FiveMMicrophone"), outputFormat);
-        exclusiveOutput.Text = Texts.Get("ExclusiveOutput");
-        AddField(fields, "", exclusiveOutput);
-        AddField(fields, Texts.Get("OutputBits"), outputBits);
-        var reserveRow = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true };
-        reserveRow.Controls.Add(reserve);
-        reserveRow.Controls.Add(new Label { Text = Texts.Get("ReserveHint"), AutoSize = true,
-            Margin = new Padding(8, 6, 0, 0) });
-        AddField(fields, Texts.Get("Reserve"), reserveRow);
-        AddField(fields, Texts.Get("Gain"), gain);
-        AddField(fields, "", gainLabel);
-        AddField(fields, Texts.Get("Level"), meter);
-        AddField(fields, "", meterLabel);
-        AddField(fields, "", windowsStartup);
-        var fieldsPanel = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
-        fieldsPanel.Controls.Add(fields);
-        root.Controls.Add(fieldsPanel, 0, 1);
-        root.Controls.Add(status, 0, 2);
-        var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(0, 12, 0, 0) };
-        actions.Controls.Add(start);
-        var sound = new Button { Text = Texts.Get("WindowsSound"), AutoSize = true, Padding = new Padding(8, 5, 8, 5) };
-        sound.Click += (_, _) => OpenSoundSettings();
-        actions.Controls.Add(sound);
-        var help = new Button { Text = Texts.Get("Help"), AutoSize = true, Padding = new Padding(8, 5, 8, 5) };
-        help.Click += (_, _) => MessageBox.Show(this, Texts.Get("Instructions"), Texts.Get("Help"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-        actions.Controls.Add(help);
-        root.Controls.Add(actions, 0, 3);
-        return root;
-    }
-
-    private static void AddField(TableLayoutPanel layout, string text, Control control)
-    {
-        var row = layout.RowCount++;
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.Controls.Add(new Label { Text = text, AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 8, 6, 8) }, 0, row);
-        control.Margin = new Padding(0, 5, 0, 5);
-        layout.Controls.Add(control, 1, row);
+        ResumeLayout(true);
+        if (background)
+        {
+            firstBackgroundOpen = true;
+            ShowInTaskbar = false;
+            _ = Handle; // Complete initial DPI scaling before Windows minimizes the window.
+            WindowState = FormWindowState.Minimized;
+        }
     }
 
     private void RefreshDevices()
@@ -353,7 +312,7 @@ internal sealed class MainForm : Form
     private void UpdateStartButton()
     {
         start.Text = Texts.Get(bridge is null ? "Start" : "Stop");
-        start.Enabled = !cleanupFailed && (bridge is not null || (inputReady && input.SelectedItem is not null && channel.SelectedIndex >= 0
+        start.Enabled = !installingUpdate && !cleanupFailed && (bridge is not null || (inputReady && input.SelectedItem is not null && channel.SelectedIndex >= 0
             && cable.SelectedItem is CableChoice { Capture.Channels: >= 1 and <= 2, Render.Channels: 2 }));
         trayStart.Text = start.Text;
         trayStart.Enabled = start.Enabled;
@@ -469,9 +428,14 @@ internal sealed class MainForm : Form
     private void SetStatus(string text, bool error)
     {
         text = text.Replace("\r\n", "\n").Replace("\n", "\r\n");
-        if (status.Text != text)
-            status.Text = text;
-        var color = error ? Color.FromArgb(156, 53, 35) : ForeColor;
+        if (fullStatus != text)
+        {
+            fullStatus = text;
+            LayoutStatusText();
+        }
+        statusHeading.Text = Texts.Get(error ? "StatusAttention" : bridge is null ? "StatusStopped" : "StatusActive");
+        var color = error ? ErrorInk : ForeColor;
+        statusHeading.ForeColor = color;
         if (status.ForeColor != color)
             status.ForeColor = color;
     }
@@ -506,6 +470,12 @@ internal sealed class MainForm : Form
         Show();
         // A hidden form only caches WindowState. Restore after showing so Windows restores its bounds.
         WindowState = FormWindowState.Normal;
+        if (firstBackgroundOpen)
+        {
+            // A window first created minimized has no normal bounds at the display's DPI.
+            firstBackgroundOpen = false;
+            ClientSize = new Size(DefaultClientSize.Width * DeviceDpi / 96, DefaultClientSize.Height * DeviceDpi / 96);
+        }
         Activate();
     }
 
@@ -520,8 +490,15 @@ internal sealed class MainForm : Form
         var previousSize = Size;
         Size = MinimumSize;
         PerformLayout();
-        if (status.Height < 100 || !ClientRectangle.Contains(RectangleToClient(status.RectangleToScreen(status.ClientRectangle))))
-            throw new InvalidOperationException("Audio status area is clipped at the minimum window size.");
+        if (status.Height < status.Font.Height * 3 || !ClientRectangle.Contains(RectangleToClient(status.RectangleToScreen(status.ClientRectangle))))
+            throw new InvalidOperationException($"Audio status area is clipped at the minimum window size: status={status.Bounds}, clientBounds={RectangleToClient(status.RectangleToScreen(status.ClientRectangle))}, size={Size}, client={ClientRectangle}, minimum={MinimumSize}, fontHeight={status.Font.Height}, DPI={DeviceDpi}.");
+        foreach (var control in new Control[] { input, channel, cable, reserve, outputBits, gain, meter, windowsStartup, exclusiveOutput, start, updateAction })
+        {
+            var bounds = control.RectangleToScreen(control.ClientRectangle);
+            for (var parent = control.Parent; parent is not null; parent = parent.Parent)
+                if (!parent.RectangleToScreen(parent.ClientRectangle).Contains(bounds))
+                    throw new InvalidOperationException($"Control {control.AccessibleName ?? control.Text} is clipped at the minimum window size: {bounds}, parent {parent.GetType().Name} {parent.RectangleToScreen(parent.ClientRectangle)}.");
+        }
         Size = previousSize;
         if (exclusiveOutput.Checked != settings.ExclusiveOutput || !exclusiveOutput.Enabled)
             throw new InvalidOperationException("Saved cable output mode is not available in the native control.");

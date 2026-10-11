@@ -2,11 +2,11 @@
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
-  <data name="Title" xml:space="preserve"><value>Apollo Mic Bridge</value></data>
-  <data name="Subtitle" xml:space="preserve"><value>Select one microphone channel and send it to VB-CABLE for FiveM.</value></data>
+  <data name="Title" xml:space="preserve"><value>PMA Mic Bridge</value></data>
+  <data name="Subtitle" xml:space="preserve"><value>Connect your microphone to FiveM through VB-CABLE.</value></data>
   <data name="Input" xml:space="preserve"><value>Microphone input</value></data>
   <data name="Channel" xml:space="preserve"><value>Microphone channel</value></data>
-  <data name="Output" xml:space="preserve"><value>Virtual cable output</value></data>
+  <data name="Output" xml:space="preserve"><value>Audio cable</value></data>
   <data name="FiveMMicrophone" xml:space="preserve"><value>Select in FiveM</value></data>
   <data name="ExclusiveOutput" xml:space="preserve"><value>Open CABLE exclusively (stream test)</value></data>
   <data name="OutputBits" xml:space="preserve"><value>Output bits</value></data>
@@ -22,21 +22,20 @@ Windows Sound → Playback → CABLE Input → Properties → Advanced: allow ap
   <data name="Help" xml:space="preserve"><value>Instructions</value></data>
   <data name="Start" xml:space="preserve"><value>Start microphone</value></data>
   <data name="Stop" xml:space="preserve"><value>Stop microphone</value></data>
-  <data name="GainValue" xml:space="preserve"><value>{0:+0;-0;0} dB · 0 dB preserves the original level.</value></data>
-  <data name="NoLevel" xml:space="preserve"><value>Microphone stopped</value></data>
+  <data name="GainValue" xml:space="preserve"><value>{0:+0;-0;0} dB</value></data>
+  <data name="NoLevel" xml:space="preserve"><value>Stopped</value></data>
   <data name="Silent" xml:space="preserve"><value>No microphone signal</value></data>
   <data name="Decibels" xml:space="preserve"><value>{0:0.0} dBFS</value></data>
-  <data name="SelectInput" xml:space="preserve"><value>Select your Apollo or another recording device.</value></data>
+  <data name="SelectInput" xml:space="preserve"><value>Select your microphone or audio interface.</value></data>
   <data name="ChannelNumber" xml:space="preserve"><value>Channel {0}</value></data>
   <data name="WindowsFormat" xml:space="preserve"><value>Windows capture: {0} channels · {1:N0} Hz · {2}-bit</value></data>
   <data name="AsioFormat" xml:space="preserve"><value>ASIO: {0} input channels · choose the microphone channel and sample rate.</value></data>
-  <data name="CableFormat" xml:space="preserve"><value>{0}
+  <data name="CableFormat" xml:space="preserve"><value>In FiveM: {0}
 {1} channels · {2:N0} Hz · mono signal on both stereo channels</value></data>
   <data name="SelectCable" xml:space="preserve"><value>Select the playback device CABLE Input.</value></data>
-  <data name="Ready" xml:space="preserve"><value>Ready. Select your microphone channel and CABLE Input, then start.
-
-In FiveM, select CABLE Output as the microphone. Keep this tool running while playing.</value></data>
-  <data name="NoInput" xml:space="preserve"><value>No active recording device found. Connect the Apollo and check its driver.</value></data>
+  <data name="Ready" xml:space="preserve"><value>Select the channel and audio cable, then start the microphone.
+In FiveM, select CABLE Output as the microphone.</value></data>
+  <data name="NoInput" xml:space="preserve"><value>No active recording device found. Connect your microphone and check its driver.</value></data>
   <data name="SavedInputMissing" xml:space="preserve"><value>The saved microphone is unavailable. Reconnect it or select an input.</value></data>
   <data name="NoCable" xml:space="preserve"><value>No VB-CABLE output selected. Install or enable VB-CABLE, then choose CABLE Input here.
 
@@ -45,36 +44,35 @@ Windows Sound → Recording → CABLE Output → Properties → Advanced: choose
   <data name="MissingCapture" xml:space="preserve"><value>The matching CABLE Output recording device is missing. Enable it in Windows Sound.</value></data>
   <data name="BadCableChannels" xml:space="preserve"><value>CABLE Output has {0} channels. In Windows Sound → Recording → Properties → Advanced, select 1 or 2 channels before starting.</value></data>
   <data name="BadRenderChannels" xml:space="preserve"><value>CABLE Input has {0} channels. Set it to 2 channels in Windows Sound → Playback → Properties → Advanced.</value></data>
-  <data name="FeedbackInput" xml:space="preserve"><value>The virtual cable cannot also be the microphone input. Select your Apollo.</value></data>
+  <data name="FeedbackInput" xml:space="preserve"><value>The virtual cable cannot also be the microphone input. Select your microphone.</value></data>
   <data name="ChannelUnavailable" xml:space="preserve"><value>The selected microphone channel is no longer available. Select an available channel.</value></data>
   <data name="DriverReset" xml:space="preserve"><value>The ASIO driver changed its settings. Stop other audio apps, check the sample rate, then restart the microphone.</value></data>
   <data name="DeviceStopped" xml:space="preserve"><value>The audio device stopped unexpectedly. Check the device and restart the microphone.</value></data>
   <data name="DeviceChanged" xml:space="preserve"><value>An audio device was removed or its format changed. Check your selections before restarting.</value></data>
   <data name="DeviceListError" xml:space="preserve"><value>Audio devices could not be read.</value></data>
-  <data name="InputProbeError" xml:space="preserve"><value>The microphone driver could not be opened. Check the Apollo connection and close other audio apps.</value></data>
+  <data name="InputProbeError" xml:space="preserve"><value>The microphone driver could not be opened. Check the audio interface connection and close other audio apps.</value></data>
   <data name="StreamError" xml:space="preserve"><value>Microphone stopped because the audio stream failed.</value></data>
   <data name="StartError" xml:space="preserve"><value>The microphone could not be started.</value></data>
   <data name="AppError" xml:space="preserve"><value>The application could not start.</value></data>
   <data name="CleanupError" xml:space="preserve"><value>An audio device could not be released. Quit from the tray menu, then restart the application.</value></data>
   <data name="Starting" xml:space="preserve"><value>Waiting for the microphone. Select {0} in FiveM.</value></data>
-  <data name="Running" xml:space="preserve"><value>Microphone running. In FiveM, select {0}.
-
-Only the selected microphone channel is sent to the cable. Stop before changing devices or channels.</value></data>
+  <data name="Running" xml:space="preserve"><value>In FiveM, select {0}.
+The connection stays active in the tray when you close this window.</value></data>
   <data name="Stopped" xml:space="preserve"><value>Microphone stopped. You can change the input, channel or output.</value></data>
-  <data name="NoData" xml:space="preserve"><value>The driver is not delivering audio. Check the Apollo, microphone permissions and other audio apps.</value></data>
-  <data name="Clipping" xml:space="preserve"><value>Microphone level is too high. Reduce gain here or on the Apollo.</value></data>
+  <data name="NoData" xml:space="preserve"><value>The driver is not delivering audio. Check your audio interface, microphone permissions and other audio apps.</value></data>
+  <data name="Clipping" xml:space="preserve"><value>Microphone level is too high. Reduce gain here or on your audio interface.</value></data>
   <data name="InvalidSamples" xml:space="preserve"><value>The microphone driver supplied invalid samples. Check the driver and sample rate, then restart.</value></data>
-  <data name="BufferWarning" xml:space="preserve"><value>Audio dropout detected. Stop the microphone and try a 10 or 20 ms extra buffer. Check sample rates and the Apollo driver buffer as well.</value></data>
+  <data name="BufferWarning" xml:space="preserve"><value>Audio dropout detected. Stop the microphone and try a 10 or 20 ms extra buffer. Check sample rates and the interface driver buffer as well.</value></data>
   <data name="Reserve" xml:space="preserve"><value>Extra buffer (ms)</value></data>
   <data name="ReserveHint" xml:space="preserve"><value>5 ms for low latency; 10/20 ms if audio drops out.</value></data>
-  <data name="AsioBuffer" xml:space="preserve"><value>ASIO driver buffer: {0} samples ≈ {1:N1} ms. Adjust in Apollo Console.</value></data>
+  <data name="AsioBuffer" xml:space="preserve"><value>ASIO driver buffer: {0} samples ≈ {1:N1} ms. Adjust in the interface driver.</value></data>
   <data name="MicrophonePermission" xml:space="preserve"><value>Enable microphone access for desktop apps in Windows Settings → Privacy &amp; security → Microphone.
 
 </value></data>
   <data name="SettingsError" xml:space="preserve"><value>Saved settings could not be loaded. Please select the devices again.</value></data>
   <data name="SettingsSaveError" xml:space="preserve"><value>Microphone started, but settings could not be saved.</value></data>
   <data name="SoundSettingsError" xml:space="preserve"><value>Windows Sound could not be opened. Open it manually from Windows Settings.</value></data>
-  <data name="Instructions" xml:space="preserve"><value>1. Connect the Apollo and install its Universal Audio driver.
+  <data name="Instructions" xml:space="preserve"><value>1. Connect your microphone or audio interface and install its audio driver.
 2. Select its Windows input or ASIO driver in this tool.
 3. Select the actual microphone channel; channel 1 is usually the first microphone input.
 4. Select CABLE Input as the output. In Windows Sound, set CABLE Input and CABLE Output to 2 channels and 48 kHz if available.
@@ -83,15 +81,43 @@ Only the selected microphone channel is sent to the cable. Stop before changing 
 
 For low latency, keep the extra buffer at 5 ms. In the VB-CABLE Control Panel, use matching 48 kHz sample rates and tune its own latency while FiveM and this tool are active. Follow the buffer statistics; a value that is too small causes dropouts. The extra buffer is only one part of the total latency.
 
-For ASIO, match the sample rate to Apollo Console. With Thunderbolt, avoid using direct Apollo Windows audio alongside ASIO; use a different playback device for game audio.
+For ASIO, match the sample rate in the interface driver. If the driver cannot serve multiple apps at once, use another output device for game audio.
 
 If your voice is doubled in a Discord stream: stop, enable “Open CABLE exclusively (stream test)”, and start again. Allow exclusive access for CABLE Input in Windows Sound. Check that FiveM still receives the microphone and the second copy disappears from the stream. Clear the checkbox if this causes problems. The test does not prevent every type of capture.
 
 This tool requires the existing VB-CABLE driver. It does not create a virtual recording device by itself.</value></data>
-  <data name="WindowsStartup" xml:space="preserve"><value>Start with Windows and load the saved microphone route</value></data>
+  <data name="WindowsStartup" xml:space="preserve"><value>Start with Windows and connect the microphone</value></data>
   <data name="StartupError" xml:space="preserve"><value>Windows startup could not be read or changed.</value></data>
   <data name="OpenWindow" xml:space="preserve"><value>Open window</value></data>
   <data name="Quit" xml:space="preserve"><value>Quit</value></data>
-  <data name="TrayRunning" xml:space="preserve"><value>Apollo Mic Bridge – microphone running</value></data>
-  <data name="TrayStopped" xml:space="preserve"><value>Apollo Mic Bridge – microphone stopped</value></data>
+  <data name="TrayRunning" xml:space="preserve"><value>PMA Mic Bridge – microphone running</value></data>
+  <data name="TrayStopped" xml:space="preserve"><value>PMA Mic Bridge – microphone stopped</value></data>
+  <data name="AudioRoute" xml:space="preserve"><value>Audio connection</value></data>
+  <data name="Signal" xml:space="preserve"><value>Levels</value></data>
+  <data name="AudioStatus" xml:space="preserve"><value>Audio status and guidance</value></data>
+  <data name="StatusDetails" xml:space="preserve"><value>Details</value></data>
+  <data name="StatusStopped" xml:space="preserve"><value>Microphone stopped</value></data>
+  <data name="StatusActive" xml:space="preserve"><value>Microphone connected</value></data>
+  <data name="StatusAttention" xml:space="preserve"><value>Check your setup</value></data>
+  <data name="UpdateAutomatic" xml:space="preserve"><value>Checks for updates at startup, including previews.</value></data>
+  <data name="CheckUpdates" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="UpdateChecking" xml:space="preserve"><value>Checking GitHub Releases …</value></data>
+  <data name="UpdateCurrent" xml:space="preserve"><value>You have the latest version.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>{0} available. The app will restart after updating.</value></data>
+  <data name="InstallUpdate" xml:space="preserve"><value>Install update</value></data>
+  <data name="RetryUpdate" xml:space="preserve"><value>Try again</value></data>
+  <data name="UpdateCheckFailed" xml:space="preserve"><value>Could not check for updates. Check your connection.</value></data>
+  <data name="UpdateRateLimit" xml:space="preserve"><value>GitHub is limiting requests. Try again later.</value></data>
+  <data name="UpdatePackageMissing" xml:space="preserve"><value>The Windows package for {0} is missing.</value></data>
+  <data name="UpdatePackageInvalid" xml:space="preserve"><value>The update package could not be verified.</value></data>
+  <data name="UpdateDownloading" xml:space="preserve"><value>Downloading update … {0}%</value></data>
+  <data name="UpdateInstalling" xml:space="preserve"><value>Installing update. The app will restart shortly.</value></data>
+  <data name="UpdateInstallFailed" xml:space="preserve"><value>Update failed. Please try again.</value></data>
+  <data name="UpdateApplyFailed" xml:space="preserve"><value>The update could not be installed. The previous version will reopen if available. You can download the update again from GitHub Releases.</value></data>
+  <data name="UpdateRestartFailed" xml:space="preserve"><value>The app could not reopen after the update. Please start PMA Mic Bridge again.</value></data>
+  <data name="UpdateBusy" xml:space="preserve"><value>An update is being installed. PMA Mic Bridge will reopen when it finishes.</value></data>
+  <data name="SelectDevice" xml:space="preserve"><value>Select a device</value></data>
+  <data name="Minimize" xml:space="preserve"><value>Minimize</value></data>
+  <data name="Maximize" xml:space="preserve"><value>Maximize / Restore</value></data>
+  <data name="CloseWindow" xml:space="preserve"><value>Close</value></data>
 </root>
