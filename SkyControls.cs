@@ -104,6 +104,7 @@ internal sealed class SkySelect : ComboBox
         SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         DropDownStyle = ComboBoxStyle.DropDownList;
         DrawMode = DrawMode.OwnerDrawFixed;
+        AutoSize = true;
         FlatStyle = FlatStyle.Flat;
         BackColor = SkyTheme.Field;
         ForeColor = SkyTheme.Ink;

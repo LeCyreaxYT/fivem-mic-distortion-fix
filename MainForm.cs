@@ -497,7 +497,7 @@ internal sealed partial class MainForm : SkyWindow
             var bounds = control.RectangleToScreen(control.ClientRectangle);
             for (var parent = control.Parent; parent is not null; parent = parent.Parent)
                 if (!parent.RectangleToScreen(parent.ClientRectangle).Contains(bounds))
-                    throw new InvalidOperationException($"Control {control.AccessibleName ?? control.Text} is clipped at the minimum window size: {bounds}, parent {parent.GetType().Name} {parent.RectangleToScreen(parent.ClientRectangle)}.");
+                    throw new InvalidOperationException($"Control {control.AccessibleName ?? control.Text} is clipped at the minimum window size: {bounds}, preferred={control.PreferredSize}, autoSize={control.AutoSize}, parent {parent.GetType().Name} {parent.RectangleToScreen(parent.ClientRectangle)}, preferred={parent.PreferredSize}.");
         }
         Size = previousSize;
         if (exclusiveOutput.Checked != settings.ExclusiveOutput || !exclusiveOutput.Enabled)
